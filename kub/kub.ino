@@ -48,7 +48,7 @@ void setup() {
 }
 
 void loop() {
-  LightAllLamps(blue=true);
+  LightAllLamps(blue=true, red=true, green = true);
 }
 
 void LightAllLamps(bool red, bool blue, bool green){

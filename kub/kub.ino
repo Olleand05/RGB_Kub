@@ -11,7 +11,7 @@ Adafruit_MCP23X17 red;
 Adafruit_MCP23X17 green;
 Adafruit_MCP23X17 blue;
 
-int Level[] = {4,5,6,7};
+int Layer[] = {4,5,6,7};
 int LampTower[4][4]={
   {0,0,0,0},
   {0,0,0,0},
@@ -48,21 +48,24 @@ void setup() {
 }
 
 void loop() {
-  for (int i = 0; i < 16; i++) {
-    red.digitalWrite(i, HIGH);
-  }
-  for (int i = 0; i < 16; i++) {
-    green.digitalWrite(i, HIGH);
-  }
-  for (int i = 0; i < 16; i++) {
-    blue.digitalWrite(i, LOW);
-  }
-  digitalWrite(4, HIGH);
-  digitalWrite(5, LOW);
-  digitalWrite(6, LOW);
-  digitalWrite(7, HIGH);
+  LightAllLamps(blue=True);
 }
 
-void LightAllLamps(){
+void LightAllLamps(bool red, bool blue, bool green){
+  for(int i = 0;i<4;i++){
+    writeDigital(Layer[i], HIGH);
+  }
+  for(int i=0;i<16;i++){
+    if(red){
+      red.digitalWrite(i,LOW);
+    }
+    if(blue){
+      blue.digitalWrite(i,LOW);
+    }
+    if(green){
+      green.digitalWrite(i,LOW);
+    }
+
+  }
 
 }

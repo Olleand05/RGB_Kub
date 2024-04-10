@@ -554,10 +554,12 @@ void function1zigzagbackward() {
 
 void function2() {
 
+  //Sets koordinates in 3d grid
+
   int y[] = { 0, 0, 0, 0, 1, 2, 3, 3, 3, 3, 2, 1, 1, 1, 2, 2 };
   int x[] = { 0, 1, 2, 3, 3, 3, 3, 2, 1, 0, 0, 0, 1, 2, 2, 1 };
 
-  //In i kuben
+  //Sets layer 1 to green
 
   for (int i = 0; i < 16; i++) {
     digitalWrite(layer1, HIGH);
@@ -566,6 +568,9 @@ void function2() {
   }
   delay(500);
   allOff();
+
+  //Sets layer 1 and 2 to red
+  
   for (int i = 0; i < 16; i++) {
     digitalWrite(layer1, HIGH);
     digitalWrite(layer2, HIGH);
@@ -576,6 +581,9 @@ void function2() {
   }
   delay(500);
   allOff();
+
+  //Sets layer 1,2 and 3 to blue
+  
   for (int i = 0; i < 16; i++) {
     digitalWrite(layer1, HIGH);
     digitalWrite(layer2, HIGH);
@@ -587,6 +595,9 @@ void function2() {
   }
   delay(500);
   allOff();
+
+  //Sets all layers to mixed color
+  
   for (int i = 0; i < 16; i++) {
     digitalWrite(layer1, HIGH);
     digitalWrite(layer2, HIGH);
@@ -603,7 +614,7 @@ void function2() {
 
   delay(1000);
 
-  //Backa ut ur kuben
+  //Back out of the cube
 
   for (int i = 0; i < 16; i++) {
     blue.digitalWrite(layerBlue[y[16 - i]][x[16 - i]], HIGH);

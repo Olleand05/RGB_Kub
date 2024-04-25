@@ -79,6 +79,13 @@ void setup() {
   pinMode(layer3, OUTPUT);
   pinMode(layer4, OUTPUT);
 
+  pinMode(forward, INPUT_PULLUP);
+  pinMode(backward, INPUT_PULLUP);
+  pinMode(right, INPUT_PULLUP);
+  pinMode(left, INPUT_PULLUP);
+  pinMode(up, INPUT_PULLUP);
+  pinMode(down,INPUT_PULLUP);
+
   pinMode(fun1in, INPUT_PULLUP);
   pinMode(fun2in, INPUT_PULLUP);
   pinMode(fun3in, INPUT_PULLUP);
@@ -970,7 +977,7 @@ void function4() {
   allOff();
   while (true) {
 
-    if (digitalRead(right) == LOW && x < 4) {
+    if (digitalRead(right) == LOW && x < 3) {
       ox = x;
       x += 1;
       Serial.print("x++");
@@ -985,7 +992,7 @@ void function4() {
       y -= 1;
       Serial.print("y--");
     }
-    if (digitalRead(backward) == LOW && y < 4) {
+    if (digitalRead(backward) == LOW && y < 3) {
       oy = y;
       y += 1;
       Serial.print("y++");

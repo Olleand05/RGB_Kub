@@ -84,7 +84,7 @@ void setup() {
   pinMode(right, INPUT_PULLUP);
   pinMode(left, INPUT_PULLUP);
   pinMode(up, INPUT_PULLUP);
-  pinMode(down,INPUT_PULLUP);
+  pinMode(down, INPUT_PULLUP);
 
   pinMode(fun1in, INPUT_PULLUP);
   pinMode(fun2in, INPUT_PULLUP);
@@ -796,37 +796,40 @@ void function3() {
   delay(200);
 
   allOff();
+  int start = 150;
+  int pace = 50;
+  int cap = 3;
 
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < cap; i++) {
     circle("red");
-    upToDown(300 - i * 50);
+    upToDown(start - i * pace);
     allOff();
 
     circle("green");
-    downToUp(300 - i * 50);
+    downToUp(start - i * pace);
     allOff();
 
     circle("blue");
-    upToDown(300 - i * 50);
+    upToDown(start - i * pace);
     allOff();
 
     circle("red");
-    downToUp(300 - i * 50);
+    downToUp(start - i * pace);
     allOff();
 
     circle("green");
-    upToDown(300 - i * 50);
+    upToDown(start - i * pace);
     allOff();
 
     circle("blue");
-    downToUp(300 - i * 50);
+    downToUp(start - i * pace);
     allOff();
   }
   function1upanddown();
 
   delay(250);
 
-  for (int i = 0; i < 1000; i++) {
+  for (int i = 0; i < 100; i++) {
     rain();
   }
   state = 0;
@@ -874,36 +877,36 @@ void circle(String color) {
   }
 }
 
-void upToDown(int goon) {
+void upToDown(int speed) {
   digitalWrite(layer4, LOW);
-  delay(goon);
+  delay(speed);
   digitalWrite(layer4, HIGH);
   digitalWrite(layer3, LOW);
-  delay(goon);
+  delay(speed);
   digitalWrite(layer3, HIGH);
   digitalWrite(layer2, LOW);
-  delay(goon);
+  delay(speed);
   digitalWrite(layer2, HIGH);
   digitalWrite(layer1, LOW);
-  delay(goon);
+  delay(speed);
   digitalWrite(layer1, HIGH);
-  delay(goon);
+  delay(speed);
 }
 
-void downToUp(int bust) {
+void downToUp(int speed) {
   digitalWrite(layer1, LOW);
-  delay(bust);
+  delay(speed);
   digitalWrite(layer1, HIGH);
   digitalWrite(layer2, LOW);
-  delay(bust);
+  delay(speed);
   digitalWrite(layer2, HIGH);
   digitalWrite(layer3, LOW);
-  delay(bust);
+  delay(speed);
   digitalWrite(layer3, HIGH);
   digitalWrite(layer4, LOW);
-  delay(bust);
+  delay(speed);
   digitalWrite(layer4, HIGH);
-  delay(bust);
+  delay(speed);
 }
 
 
@@ -946,20 +949,20 @@ void rain() {
 
   allOff();
   allOn();
-  for(int i; i<4;i++){
-    for(int j; j<4;j++){
-      
-  if (randCol == 0) {
-    red.digitalWrite(layerRed[i][j],LOW);
-  }
+  for (int i; i < 4; i++) {
+    for (int j; j < 4; j++) {
 
-  if (randCol == 1) {
-    green.digitalWrite(layerGreen[i][j],LOW);
-  }
+      if (randCol == 0) {
+        red.digitalWrite(layerRed[i][j], LOW);
+      }
 
-  if (randCol == 2) {
-    blue.digitalWrite(layerBlue[i][j],LOW);
-  }
+      if (randCol == 1) {
+        green.digitalWrite(layerGreen[i][j], LOW);
+      }
+
+      if (randCol == 2) {
+        blue.digitalWrite(layerBlue[i][j], LOW);
+      }
     }
   }
   delay(20);
@@ -973,42 +976,112 @@ void function4() {
   int y = 0;
   int oy = 0;
   int ox = 0;
+  int clickDelay = 250;
+  bool isComplete = true;
+  int levelCount = 1;
+
+  int lvl1x = rand() % 4;
+  int lvl1y = rand() % 4;
+  int lvl1z = rand() % 4 + 1;
+
+  if (lvl1x == 0 && lvl1y == 0 && lvl1z == 1) {
+    lvl1x = rand() % 4;
+    lvl1y = rand() % 4;
+    lvl1z = rand() % 4 + 1;
+  }
+
+  int lvl2x = rand() % 4;
+  int lvl2y = rand() % 4;
+  int lvl2z = rand() % 4 + 1;
+
+  if (lvl2x == 0 && lvl2y == 0 && lvl2z == 1) {
+    lvl2x = rand() % 4;
+    lvl2y = rand() % 4;
+    lvl2z = rand() % 4 + 1;
+  }
+
+  int lvl3x = rand() % 4;
+  int lvl3y = rand() % 4;
+  int lvl3z = rand() % 4 + 1;
+
+  if (lvl3x == 0 && lvl3y == 0 && lvl3z == 1) {
+    lvl3x = rand() % 4;
+    lvl3y = rand() % 4;
+    lvl3z = rand() % 4 + 1;
+  }
+
 
   allOff();
   while (true) {
+    if (isComplete == true) {
+      if (levelCount == 1) {
+        levels(lvl1x, lvl1y, lvl1z);
+        
+      }
+      isComplete = false;
+    }
 
     if (digitalRead(right) == LOW && x < 3) {
       ox = x;
       x += 1;
       Serial.print("x++");
+      delay(clickDelay);
+      allOff();
     }
-    if (digitalRead(left) == LOW && x >= 0) {
+    if (digitalRead(left) == LOW && x > 0) {
       ox = x;
       x -= 1;
       Serial.print("x--");
+      delay(clickDelay);
+      allOff();
     }
-    if (digitalRead(forward) == LOW && y >= 0) {
+    if (digitalRead(forward) == LOW && y > 0) {
       oy = y;
       y -= 1;
       Serial.print("y--");
+      delay(clickDelay);
+      allOff();
     }
     if (digitalRead(backward) == LOW && y < 3) {
       oy = y;
       y += 1;
       Serial.print("y++");
+      delay(clickDelay);
+      allOff();
     }
     if (digitalRead(up) == LOW && z < 4) {
       z += 1;
       Serial.print("z++");
+      delay(clickDelay);
+      allOff();
     }
-    if (digitalRead(down) == LOW && z >= 0) {
+    if (digitalRead(down) == LOW && z > 1) {
       z -= 1;
       Serial.print("z--");
+      delay(clickDelay);
+      allOff();
+    }
+    if (z < 1) {
+      z = 1;
+    }
+    if (z > 4) {
+      z = 4;
+    }
+    if (x < 0) {
+      x = 0;
+    }
+    if (x > 3) {
+      x = 4;
+    }
+    if (y < 0) {
+      y = 0;
+    }
+    if (x > 3) {
+      x = 3;
     }
 
-
-    green.digitalWrite(layerGreen[ox][oy], HIGH);
-    green.digitalWrite(layerGreen[x][y], LOW);
+    //green.digitalWrite(layerGreen[oy][ox], HIGH);
+    green.digitalWrite(layerGreen[y][x], LOW);
     if (z == 1) {
       digitalWrite(layer1, HIGH);
       digitalWrite(layer2, LOW);
@@ -1034,6 +1107,39 @@ void function4() {
       digitalWrite(layer4, HIGH);
     }
   }
+}
+
+
+
+void levels(int x, int y, int z) {
+  allOff();
+  blue.digitalWrite(layerBlue[x][y], LOW);
+  if (z == 1) {
+    digitalWrite(layer1, HIGH);
+    digitalWrite(layer2, LOW);
+    digitalWrite(layer3, LOW);
+    digitalWrite(layer4, LOW);
+  }
+  if (z == 2) {
+    digitalWrite(layer1, LOW);
+    digitalWrite(layer2, HIGH);
+    digitalWrite(layer3, LOW);
+    digitalWrite(layer4, LOW);
+  }
+  if (z == 3) {
+    digitalWrite(layer1, LOW);
+    digitalWrite(layer2, LOW);
+    digitalWrite(layer3, HIGH);
+    digitalWrite(layer4, LOW);
+  }
+  if (z == 4) {
+    digitalWrite(layer1, LOW);
+    digitalWrite(layer2, LOW);
+    digitalWrite(layer3, LOW);
+    digitalWrite(layer4, HIGH);
+  }
+  delay(500);
+  allOff();
 }
 
 void allOn() {

@@ -1,0 +1,1673 @@
+#include <Adafruit_MCP23X17.h>
+
+// initiera lager
+const char layer1 = A3;
+const char layer2 = A2;
+const char layer3 = A1;
+const char layer4 = 9;
+
+// initiera knapp-inputs
+const char fun1in = 13;
+const char fun2in = 12;
+const char fun3in = 11;
+const char fun4in = 10;
+
+// initiera movement-knapparna
+const char forward = 7;
+const char right = 6;
+const char backward = 5;
+const char left = 4;
+const char up = 2;
+const char down = 3;
+const char lockIn = 8;
+
+// initiera state
+int state = 0;
+
+int randomVariable = 1;
+
+// initiera variabel för delay
+int fun1tick = 200;
+
+
+//Adafruit_green3X08 mcp;
+Adafruit_MCP23X17 red;
+Adafruit_MCP23X17 green;
+Adafruit_MCP23X17 blue;
+
+
+
+
+// 2d array för MCP23017 inputs
+
+int layerRed[4][4] = {
+  { 2, 4, 10, 11 },
+  { 3, 0, 6, 12 },
+  { 14, 15, 7, 9 },
+  { 1, 13, 5, 8 }
+};
+
+int layerGreen[4][4] = {
+  { 2, 5, 0, 1 },
+  { 8, 10, 7, 14 },
+  { 9, 15, 12, 3 },
+  { 11, 6, 4, 13 }
+};
+
+int layerBlue[4][4] = {
+  { 6, 0, 1, 2 },
+  { 7, 13, 8, 9 },
+  { 3, 4, 11, 12 },
+  { 5, 15, 14, 10 }
+};
+
+void setup() {
+  Serial.begin(9600);
+	int seed = analogRead(A0);
+  srand(seed);
+
+  red.begin_I2C(0x26);
+  green.begin_I2C(0x24);
+  blue.begin_I2C(0x20);
+
+  for (int i = 0; i < 16; i++) {
+    red.pinMode(i, OUTPUT);
+  }
+  for (int i = 0; i < 16; i++) {
+    green.pinMode(i, OUTPUT);
+  }
+  for (int i = 0; i < 16; i++) {
+    blue.pinMode(i, OUTPUT);
+  }
+  pinMode(layer1, OUTPUT);
+  pinMode(layer2, OUTPUT);
+  pinMode(layer3, OUTPUT);
+  pinMode(layer4, OUTPUT);
+
+  pinMode(forward, INPUT_PULLUP);
+  pinMode(backward, INPUT_PULLUP);
+  pinMode(right, INPUT_PULLUP);
+  pinMode(left, INPUT_PULLUP);
+  pinMode(up, INPUT_PULLUP);
+  pinMode(down, INPUT_PULLUP);
+  pinMode(lockIn, INPUT_PULLUP);
+
+  pinMode(fun1in, INPUT_PULLUP);
+  pinMode(fun2in, INPUT_PULLUP);
+  pinMode(fun3in, INPUT_PULLUP);
+  pinMode(fun4in, INPUT_PULLUP);
+
+  digitalWrite(layer1, LOW);
+  digitalWrite(layer2, LOW);
+  digitalWrite(layer3, LOW);
+  digitalWrite(layer4, LOW);
+}
+
+void loop() {
+  allOff();
+  randomVariable++;
+
+  // kollar om knapparna är nedtryckta
+  if (digitalRead(fun1in) == LOW) {
+    state = 1;
+  }
+  if (digitalRead(fun2in) == LOW) {
+    state = 2;
+  }
+  if (digitalRead(fun3in) == LOW) {
+    state = 3;
+  }
+  if (digitalRead(fun4in) == LOW) {
+    state = 4;
+  }
+
+
+  if (state == 0) {
+    allOff();
+  }
+  if (state == 1) {
+    function1();
+  }
+  if (state == 2) {
+    function2();
+  }
+  if (state == 3) {
+    function3();
+  }
+  if (state == 4) {
+    function4();
+  }
+}
+
+
+void function1() {
+  digitalWrite(layer1, HIGH);
+  function1rainbowcorner();
+  allOff();
+
+  digitalWrite(layer1, HIGH);
+  digitalWrite(layer2, HIGH);
+  function1rainbowcorner();
+  allOff();
+
+  digitalWrite(layer1, HIGH);
+  digitalWrite(layer2, HIGH);
+  digitalWrite(layer3, HIGH);
+  function1rainbowcorner();
+  allOff();
+
+  digitalWrite(layer1, HIGH);
+  digitalWrite(layer2, HIGH);
+  digitalWrite(layer3, HIGH);
+  digitalWrite(layer4, HIGH);
+  function1rainbowcorner();
+  allOff();
+
+  function1rainbowspin();
+  function1rainbowspin();
+  function1rainbowspin();
+  function1rainbowspin();
+  function1rainbowspin();
+
+  function1upanddown();
+  function1upanddown();
+  function1upanddown();
+
+  digitalWrite(layer1, HIGH);
+  function1zigzagforward();
+
+  digitalWrite(layer2, HIGH);
+  function1zigzagbackward();
+
+  digitalWrite(layer3, HIGH);
+  function1zigzagforward();
+
+  digitalWrite(layer4, HIGH);
+  function1zigzagbackward();
+
+  state = 0;
+}
+
+void function1rainbowcorner() {
+  allColumnsOff();
+  red.digitalWrite(layerRed[0][0], LOW);
+  delay(fun1tick);
+
+  allColumnsOff();
+  green.digitalWrite(layerGreen[0][0], LOW);
+  red.digitalWrite(layerRed[1][0], LOW);
+  red.digitalWrite(layerRed[0][1], LOW);
+  delay(fun1tick);
+
+  allColumnsOff();
+  blue.digitalWrite(layerBlue[0][0], LOW);
+  green.digitalWrite(layerGreen[1][0], LOW);
+  green.digitalWrite(layerGreen[0][1], LOW);
+  red.digitalWrite(layerRed[2][0], LOW);
+  red.digitalWrite(layerRed[1][1], LOW);
+  red.digitalWrite(layerRed[0][2], LOW);
+  delay(fun1tick);
+
+  allColumnsOff();
+  red.digitalWrite(layerRed[0][0], LOW);
+  blue.digitalWrite(layerBlue[1][0], LOW);
+  blue.digitalWrite(layerBlue[0][1], LOW);
+  green.digitalWrite(layerGreen[2][0], LOW);
+  green.digitalWrite(layerGreen[1][1], LOW);
+  green.digitalWrite(layerGreen[0][2], LOW);
+  red.digitalWrite(layerRed[3][0], LOW);
+  red.digitalWrite(layerRed[0][3], LOW);
+  red.digitalWrite(layerRed[2][1], LOW);
+  red.digitalWrite(layerRed[1][2], LOW);
+  delay(fun1tick);
+
+  allColumnsOff();
+  green.digitalWrite(layerGreen[0][0], LOW);
+  red.digitalWrite(layerRed[1][0], LOW);
+  red.digitalWrite(layerRed[0][1], LOW);
+  blue.digitalWrite(layerBlue[2][0], LOW);
+  blue.digitalWrite(layerBlue[1][1], LOW);
+  blue.digitalWrite(layerBlue[0][2], LOW);
+  green.digitalWrite(layerGreen[3][0], LOW);
+  green.digitalWrite(layerGreen[0][3], LOW);
+  green.digitalWrite(layerGreen[2][1], LOW);
+  green.digitalWrite(layerGreen[1][2], LOW);
+  red.digitalWrite(layerRed[3][1], LOW);
+  red.digitalWrite(layerRed[1][3], LOW);
+  red.digitalWrite(layerRed[2][2], LOW);
+  delay(fun1tick);
+
+  allColumnsOff();
+  blue.digitalWrite(layerBlue[0][0], LOW);
+  green.digitalWrite(layerGreen[1][0], LOW);
+  green.digitalWrite(layerGreen[0][1], LOW);
+  red.digitalWrite(layerRed[2][0], LOW);
+  red.digitalWrite(layerRed[1][1], LOW);
+  red.digitalWrite(layerRed[0][2], LOW);
+  blue.digitalWrite(layerBlue[3][0], LOW);
+  blue.digitalWrite(layerBlue[0][3], LOW);
+  blue.digitalWrite(layerBlue[2][1], LOW);
+  blue.digitalWrite(layerBlue[1][2], LOW);
+  green.digitalWrite(layerGreen[3][1], LOW);
+  green.digitalWrite(layerGreen[1][3], LOW);
+  green.digitalWrite(layerGreen[2][2], LOW);
+  red.digitalWrite(layerRed[2][3], LOW);
+  red.digitalWrite(layerRed[3][2], LOW);
+  delay(fun1tick);
+
+  allColumnsOff();
+  red.digitalWrite(layerRed[0][0], LOW);
+  blue.digitalWrite(layerBlue[1][0], LOW);
+  blue.digitalWrite(layerBlue[0][1], LOW);
+  green.digitalWrite(layerGreen[2][0], LOW);
+  green.digitalWrite(layerGreen[1][1], LOW);
+  green.digitalWrite(layerGreen[0][2], LOW);
+  red.digitalWrite(layerRed[3][0], LOW);
+  red.digitalWrite(layerRed[0][3], LOW);
+  red.digitalWrite(layerRed[2][1], LOW);
+  red.digitalWrite(layerRed[1][2], LOW);
+  blue.digitalWrite(layerBlue[3][1], LOW);
+  blue.digitalWrite(layerBlue[1][3], LOW);
+  blue.digitalWrite(layerBlue[2][2], LOW);
+  green.digitalWrite(layerGreen[2][3], LOW);
+  green.digitalWrite(layerGreen[3][2], LOW);
+  red.digitalWrite(layerRed[3][3], LOW);
+  delay(fun1tick);
+
+  allColumnsOff();
+  green.digitalWrite(layerGreen[0][0], LOW);
+  red.digitalWrite(layerRed[1][0], LOW);
+  red.digitalWrite(layerRed[0][1], LOW);
+  blue.digitalWrite(layerBlue[2][0], LOW);
+  blue.digitalWrite(layerBlue[1][1], LOW);
+  blue.digitalWrite(layerBlue[0][2], LOW);
+  green.digitalWrite(layerGreen[3][0], LOW);
+  green.digitalWrite(layerGreen[0][3], LOW);
+  green.digitalWrite(layerGreen[2][1], LOW);
+  green.digitalWrite(layerGreen[1][2], LOW);
+  red.digitalWrite(layerRed[3][1], LOW);
+  red.digitalWrite(layerRed[1][3], LOW);
+  red.digitalWrite(layerRed[2][2], LOW);
+  blue.digitalWrite(layerBlue[2][3], LOW);
+  blue.digitalWrite(layerBlue[3][2], LOW);
+  green.digitalWrite(layerGreen[3][3], LOW);
+  delay(fun1tick);
+
+  allColumnsOff();
+  blue.digitalWrite(layerBlue[0][0], LOW);
+  green.digitalWrite(layerGreen[1][0], LOW);
+  green.digitalWrite(layerGreen[0][1], LOW);
+  red.digitalWrite(layerRed[2][0], LOW);
+  red.digitalWrite(layerRed[1][1], LOW);
+  red.digitalWrite(layerRed[0][2], LOW);
+  blue.digitalWrite(layerBlue[3][0], LOW);
+  blue.digitalWrite(layerBlue[0][3], LOW);
+  blue.digitalWrite(layerBlue[2][1], LOW);
+  blue.digitalWrite(layerBlue[1][2], LOW);
+  green.digitalWrite(layerGreen[3][1], LOW);
+  green.digitalWrite(layerGreen[1][3], LOW);
+  green.digitalWrite(layerGreen[2][2], LOW);
+  red.digitalWrite(layerRed[2][3], LOW);
+  red.digitalWrite(layerRed[3][2], LOW);
+  blue.digitalWrite(layerBlue[3][3], LOW);
+  delay(fun1tick);
+}
+
+void function1rainbowspin() {
+  digitalWrite(layer1, HIGH);
+  for (int i = 0; i < 4; i++) {
+    red.digitalWrite(layerRed[i][0], LOW);
+  }
+  delay(fun1tick / 3);
+  allColumnsOff();
+
+  for (int i = 0; i < 4; i++) {
+    green.digitalWrite(layerGreen[i][1], LOW);
+  }
+  delay(fun1tick / 3);
+  allColumnsOff();
+
+  for (int i = 0; i < 4; i++) {
+    blue.digitalWrite(layerBlue[i][2], LOW);
+  }
+  delay(fun1tick / 3);
+  allColumnsOff();
+
+  for (int i = 0; i < 4; i++) {
+    red.digitalWrite(layerRed[i][3], LOW);
+  }
+  delay(fun1tick / 3);
+  allColumnsOff();
+
+  digitalWrite(layer1, LOW);
+  digitalWrite(layer2, HIGH);
+  for (int i = 0; i < 4; i++) {
+    green.digitalWrite(layerGreen[i][3], LOW);
+  }
+  delay(fun1tick / 3);
+  allColumnsOff();
+
+  digitalWrite(layer2, LOW);
+  digitalWrite(layer3, HIGH);
+  for (int i = 0; i < 4; i++) {
+    blue.digitalWrite(layerBlue[i][3], LOW);
+  }
+  delay(fun1tick / 3);
+  allColumnsOff();
+
+  digitalWrite(layer3, LOW);
+  digitalWrite(layer4, HIGH);
+  for (int i = 0; i < 4; i++) {
+    red.digitalWrite(layerRed[i][3], LOW);
+  }
+  delay(fun1tick / 3);
+  allColumnsOff();
+
+  for (int i = 0; i < 4; i++) {
+    green.digitalWrite(layerGreen[i][2], LOW);
+  }
+  delay(fun1tick / 3);
+  allColumnsOff();
+
+  for (int i = 0; i < 4; i++) {
+    blue.digitalWrite(layerBlue[i][1], LOW);
+  }
+  delay(fun1tick / 3);
+  allColumnsOff();
+
+  for (int i = 0; i < 4; i++) {
+    red.digitalWrite(layerRed[i][0], LOW);
+  }
+  delay(fun1tick / 3);
+  allColumnsOff();
+
+  digitalWrite(layer4, LOW);
+  digitalWrite(layer3, HIGH);
+  for (int i = 0; i < 4; i++) {
+    green.digitalWrite(layerGreen[i][0], LOW);
+  }
+  delay(fun1tick / 3);
+  allColumnsOff();
+
+  digitalWrite(layer3, LOW);
+  digitalWrite(layer2, HIGH);
+  for (int i = 0; i < 4; i++) {
+    blue.digitalWrite(layerBlue[i][0], LOW);
+  }
+  delay(fun1tick / 3);
+  allOff();
+}
+
+void function1upanddown() {
+  digitalWrite(layer1, HIGH);
+  for (int i = 1; i < 3; i++) {
+    red.digitalWrite(layerRed[i][1], LOW);
+  }
+  for (int i = 1; i < 3; i++) {
+    red.digitalWrite(layerRed[i][2], LOW);
+  }
+  delay(fun1tick / 2);
+  allOff();
+
+  digitalWrite(layer2, HIGH);
+  for (int i = 1; i < 3; i++) {
+    green.digitalWrite(layerGreen[i][1], LOW);
+  }
+  for (int i = 1; i < 3; i++) {
+    green.digitalWrite(layerGreen[i][2], LOW);
+  }
+  delay(fun1tick / 2);
+  allOff();
+
+  digitalWrite(layer3, HIGH);
+  for (int i = 1; i < 3; i++) {
+    blue.digitalWrite(layerBlue[i][1], LOW);
+  }
+  for (int i = 1; i < 3; i++) {
+    blue.digitalWrite(layerBlue[i][2], LOW);
+  }
+  delay(fun1tick / 2);
+  allOff();
+
+  digitalWrite(layer4, HIGH);
+  for (int i = 1; i < 3; i++) {
+    red.digitalWrite(layerRed[i][1], LOW);
+  }
+  for (int i = 1; i < 3; i++) {
+    red.digitalWrite(layerRed[i][2], LOW);
+  }
+  delay(fun1tick / 2);
+  allOff();
+
+  digitalWrite(layer4, HIGH);
+  allColumnsOff();
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      red.digitalWrite(layerRed[i][j], LOW);
+    }
+  }
+  delay(fun1tick / 2);
+  allOff();
+
+  digitalWrite(layer3, HIGH);
+  allColumnsOff();
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      blue.digitalWrite(layerRed[i][j], LOW);
+    }
+  }
+  delay(fun1tick / 2);
+  allOff();
+
+  digitalWrite(layer2, HIGH);
+  allColumnsOff();
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      green.digitalWrite(layerGreen[i][j], LOW);
+    }
+  }
+  delay(fun1tick / 2);
+  allOff();
+
+  digitalWrite(layer1, HIGH);
+  allColumnsOff();
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      red.digitalWrite(layerRed[i][j], LOW);
+    }
+  }
+  delay(fun1tick / 2);
+  allOff();
+}
+
+void function1zigzagforward() {
+  allColumnsOff();
+  red.digitalWrite(layerRed[0][0], LOW);
+  delay(fun1tick / 2);
+
+  green.digitalWrite(layerGreen[1][0], LOW);
+  delay(fun1tick / 2);
+
+  blue.digitalWrite(layerBlue[2][0], LOW);
+  delay(fun1tick / 2);
+
+  red.digitalWrite(layerRed[3][0], LOW);
+  delay(fun1tick / 2);
+
+  green.digitalWrite(layerGreen[3][1], LOW);
+  delay(fun1tick / 2);
+
+  blue.digitalWrite(layerBlue[2][1], LOW);
+  delay(fun1tick / 2);
+
+  red.digitalWrite(layerRed[1][1], LOW);
+  delay(fun1tick / 2);
+
+  green.digitalWrite(layerGreen[0][1], LOW);
+  delay(fun1tick / 2);
+
+  blue.digitalWrite(layerBlue[0][2], LOW);
+  delay(fun1tick / 2);
+
+  red.digitalWrite(layerRed[1][2], LOW);
+  delay(fun1tick / 2);
+
+  green.digitalWrite(layerGreen[2][2], LOW);
+  delay(fun1tick / 2);
+
+  blue.digitalWrite(layerBlue[3][2], LOW);
+  delay(fun1tick / 2);
+
+  red.digitalWrite(layerRed[3][3], LOW);
+  delay(fun1tick / 2);
+
+  green.digitalWrite(layerGreen[2][3], LOW);
+  delay(fun1tick / 2);
+
+  blue.digitalWrite(layerBlue[1][3], LOW);
+  delay(fun1tick / 2);
+
+  red.digitalWrite(layerRed[0][3], LOW);
+  delay(fun1tick / 2);
+}
+
+void function1zigzagbackward() {
+  allColumnsOff();
+  red.digitalWrite(layerRed[0][3], LOW);
+  delay(fun1tick / 2);
+
+  blue.digitalWrite(layerBlue[1][3], LOW);
+  delay(fun1tick / 2);
+
+  green.digitalWrite(layerGreen[2][3], LOW);
+  delay(fun1tick / 2);
+
+  red.digitalWrite(layerRed[3][3], LOW);
+  delay(fun1tick / 2);
+
+  blue.digitalWrite(layerBlue[3][2], LOW);
+  delay(fun1tick / 2);
+
+  green.digitalWrite(layerGreen[2][2], LOW);
+  delay(fun1tick / 2);
+
+  red.digitalWrite(layerRed[1][2], LOW);
+  delay(fun1tick / 2);
+
+  blue.digitalWrite(layerBlue[0][2], LOW);
+  delay(fun1tick / 2);
+
+  green.digitalWrite(layerGreen[0][1], LOW);
+  delay(fun1tick / 2);
+
+  red.digitalWrite(layerRed[1][1], LOW);
+  delay(fun1tick / 2);
+
+  blue.digitalWrite(layerBlue[2][1], LOW);
+  delay(fun1tick / 2);
+
+  green.digitalWrite(layerGreen[3][1], LOW);
+  delay(fun1tick / 2);
+
+  red.digitalWrite(layerRed[3][0], LOW);
+  delay(fun1tick / 2);
+
+  blue.digitalWrite(layerBlue[2][0], LOW);
+  delay(fun1tick / 2);
+
+  green.digitalWrite(layerGreen[1][0], LOW);
+  delay(fun1tick / 2);
+
+  red.digitalWrite(layerRed[0][0], LOW);
+  delay(fun1tick / 2);
+}
+
+void function2() {
+  //Sets koordinates in 3d grid
+  int y[] = { 0, 0, 0, 0, 1, 2, 3, 3, 3, 3, 2, 1, 1, 1, 2, 2 };
+  int x[] = { 0, 1, 2, 3, 3, 3, 3, 2, 1, 0, 0, 0, 1, 2, 2, 1 };
+
+  //Sets layer 1 to green
+  for (int i = 0; i < 16; i++) {
+    digitalWrite(layer1, HIGH);
+    green.digitalWrite(layerGreen[y[i]][x[i]], LOW);
+    delay(50);
+  }
+  delay(500);
+  allOff();
+
+  //Sets layer 1 and 2 to red
+  for (int i = 0; i < 16; i++) {
+    digitalWrite(layer1, HIGH);
+    digitalWrite(layer2, HIGH);
+    red.digitalWrite(layerRed[y[i]][x[i]], LOW);
+    delay(50);
+  }
+  delay(500);
+  allOff();
+
+  //Sets layer 1,2 and 3 to blue
+  for (int i = 0; i < 16; i++) {
+    digitalWrite(layer1, HIGH);
+    digitalWrite(layer2, HIGH);
+    digitalWrite(layer3, HIGH);
+    blue.digitalWrite(layerBlue[y[i]][x[i]], LOW);
+    delay(50);
+  }
+  delay(500);
+  allOff();
+
+  //Sets all layers to mixed color
+
+  for (int i = 0; i < 16; i++) {
+    digitalWrite(layer1, HIGH);
+    digitalWrite(layer2, HIGH);
+    digitalWrite(layer3, HIGH);
+    digitalWrite(layer4, HIGH);
+    blue.digitalWrite(layerBlue[y[i]][x[i]], LOW);
+    green.digitalWrite(layerBlue[y[i]][x[i]], LOW);
+    red.digitalWrite(layerBlue[y[i]][x[i]], LOW);
+    delay(50);
+  }
+  delay(1000);
+
+  //Back out of the cube
+
+  for (int i = 0; i < 16; i++) {
+    blue.digitalWrite(layerBlue[y[16 - i]][x[16 - i]], HIGH);
+    red.digitalWrite(layerGreen[y[16 - i]][x[16 - i]], HIGH);
+    green.digitalWrite(layerGreen[y[16 - i]][x[16 - i]], HIGH);
+    delay(50);
+  }
+  state = 0;
+}
+
+void function3() {
+  //stänger av alla lager
+  allOff();
+
+  digitalWrite(layer4, HIGH);
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      blue.digitalWrite(layerBlue[i][j], LOW);
+    }
+  }
+  delay(200);
+
+  digitalWrite(layer4, LOW);
+  digitalWrite(layer3, HIGH);
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      green.digitalWrite(layerBlue[i][j], LOW);
+      blue.digitalWrite(layerBlue[i][j], LOW);
+    }
+  }
+  delay(200);
+  digitalWrite(layer3, LOW);
+  digitalWrite(layer2, HIGH);
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      green.digitalWrite(layerBlue[i][j], HIGH);
+      blue.digitalWrite(layerBlue[i][j], LOW);
+    }
+  }
+  delay(200);
+  digitalWrite(layer2, LOW);
+  digitalWrite(layer1, HIGH);
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      green.digitalWrite(layerGreen[i][j], LOW);
+      blue.digitalWrite(layerBlue[i][j], LOW);
+    }
+  }
+  delay(200);
+  allOff();
+  allOn();
+  for (int i = 0; i < 4; i++) {
+    red.digitalWrite(layerRed[0][i], LOW);
+  }
+  delay(200);
+  for (int i = 0; i < 4; i++) {
+    green.digitalWrite(layerGreen[1][i], LOW);
+  }
+  delay(200);
+  for (int i = 0; i < 4; i++) {
+    red.digitalWrite(layerRed[2][i], LOW);
+    green.digitalWrite(layerGreen[2][i], HIGH);
+  }
+  delay(200);
+  for (int i = 0; i < 4; i++) {
+    green.digitalWrite(layerGreen[3][i], LOW);
+  }
+  delay(200);
+  allOff();
+  digitalWrite(layer1, HIGH);
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      blue.digitalWrite(layerBlue[i][j], LOW);
+    }
+  }
+  delay(200);
+
+  digitalWrite(layer1, LOW);
+  digitalWrite(layer2, HIGH);
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      green.digitalWrite(layerGreen[i][j], LOW);
+      blue.digitalWrite(layerBlue[i][j], HIGH);
+    }
+  }
+
+  delay(200);
+
+  digitalWrite(layer2, LOW);
+  digitalWrite(layer3, HIGH);
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      green.digitalWrite(layerGreen[i][j], HIGH);
+      blue.digitalWrite(layerBlue[i][j], LOW);
+    }
+  }
+
+  delay(200);
+
+  digitalWrite(layer3, LOW);
+  digitalWrite(layer4, HIGH);
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      green.digitalWrite(layerGreen[i][j], LOW);
+      blue.digitalWrite(layerBlue[i][j], HIGH);
+    }
+  }
+  delay(200);
+
+  allOff();
+
+  allOn();
+  for (int i = 0; i < 4; i++) {
+    red.digitalWrite(layerRed[3][i], LOW);
+  }
+  delay(200);
+
+  for (int i = 0; i < 4; i++) {
+    green.digitalWrite(layerGreen[2][i], LOW);
+    blue.digitalWrite(layerBlue[2][i], LOW);
+    red.digitalWrite(layerRed[2][i], HIGH);
+  }
+  delay(200);
+  for (int i = 0; i < 4; i++) {
+    green.digitalWrite(layerGreen[1][i], HIGH);
+    blue.digitalWrite(layerBlue[1][i], HIGH);
+    red.digitalWrite(layerRed[1][i], LOW);
+  }
+  delay(200);
+  for (int i = 0; i < 4; i++) {
+    green.digitalWrite(layerGreen[0][i], LOW);
+    blue.digitalWrite(layerBlue[0][i], LOW);
+    red.digitalWrite(layerRed[0][i], HIGH);
+  }
+  delay(200);
+
+  allOff();
+  int start = 150;
+  int pace = 50;
+  int cap = 3;
+
+  for (int i = 0; i < cap; i++) {
+    circle("red");
+    upToDown(start - i * pace);
+    allOff();
+
+    circle("green");
+    downToUp(start - i * pace);
+    allOff();
+
+    circle("blue");
+    upToDown(start - i * pace);
+    allOff();
+
+    circle("red");
+    downToUp(start - i * pace);
+    allOff();
+
+    circle("green");
+    upToDown(start - i * pace);
+    allOff();
+
+    circle("blue");
+    downToUp(start - i * pace);
+    allOff();
+  }
+  function1upanddown();
+  delay(250);
+
+  for (int i = 0; i < 100; i++) {
+    rain();
+  }
+  state = 0;
+}
+
+void circle(String color) {
+  if (color == "red") {
+    red.digitalWrite(layerRed[1][0], LOW);
+    red.digitalWrite(layerRed[2][0], LOW);
+
+    red.digitalWrite(layerRed[0][1], LOW);
+    red.digitalWrite(layerRed[0][2], LOW);
+
+    red.digitalWrite(layerRed[1][3], LOW);
+    red.digitalWrite(layerRed[2][3], LOW);
+
+    red.digitalWrite(layerRed[3][1], LOW);
+    red.digitalWrite(layerRed[3][2], LOW);
+  }
+  if (color == "green") {
+    green.digitalWrite(layerGreen[1][0], LOW);
+    green.digitalWrite(layerGreen[2][0], LOW);
+
+    green.digitalWrite(layerGreen[0][1], LOW);
+    green.digitalWrite(layerGreen[0][2], LOW);
+
+    green.digitalWrite(layerGreen[1][3], LOW);
+    green.digitalWrite(layerGreen[2][3], LOW);
+
+    green.digitalWrite(layerGreen[3][1], LOW);
+    green.digitalWrite(layerGreen[3][2], LOW);
+  }
+  if (color == "blue") {
+    blue.digitalWrite(layerBlue[1][0], LOW);
+    blue.digitalWrite(layerBlue[2][0], LOW);
+
+    blue.digitalWrite(layerBlue[0][1], LOW);
+    blue.digitalWrite(layerBlue[0][2], LOW);
+
+    blue.digitalWrite(layerBlue[1][3], LOW);
+    blue.digitalWrite(layerBlue[2][3], LOW);
+
+    blue.digitalWrite(layerBlue[3][1], LOW);
+    blue.digitalWrite(layerBlue[3][2], LOW);
+  }
+}
+
+void upToDown(int speed) {
+  digitalWrite(layer4, LOW);
+  delay(speed);
+  digitalWrite(layer4, HIGH);
+  digitalWrite(layer3, LOW);
+  delay(speed);
+  digitalWrite(layer3, HIGH);
+  digitalWrite(layer2, LOW);
+  delay(speed);
+  digitalWrite(layer2, HIGH);
+  digitalWrite(layer1, LOW);
+  delay(speed);
+  digitalWrite(layer1, HIGH);
+  delay(speed);
+}
+
+void downToUp(int speed) {
+  digitalWrite(layer1, LOW);
+  delay(speed);
+  digitalWrite(layer1, HIGH);
+  digitalWrite(layer2, LOW);
+  delay(speed);
+  digitalWrite(layer2, HIGH);
+  digitalWrite(layer3, LOW);
+  delay(speed);
+  digitalWrite(layer3, HIGH);
+  digitalWrite(layer4, LOW);
+  delay(speed);
+  digitalWrite(layer4, HIGH);
+  delay(speed);
+}
+
+void rain() {
+  allOff();
+  //std::list<Type> colors = {"red","green,blue"}
+  int randCol = rand() % 3;
+  int randX = rand() % 4;
+  int randY = rand() % 4;
+
+  if (randCol == 0) {
+    red.digitalWrite(layerRed[randX][randY], LOW);
+  }
+
+  if (randCol == 1) {
+    green.digitalWrite(layerGreen[randX][randY], LOW);
+  }
+
+  if (randCol == 2) {
+    blue.digitalWrite(layerBlue[randX][randY], LOW);
+  }
+
+  digitalWrite(layer4, HIGH);
+  delay(20);
+
+  digitalWrite(layer4, LOW);
+  digitalWrite(layer3, HIGH);
+  delay(20);
+
+  digitalWrite(layer3, LOW);
+  digitalWrite(layer2, HIGH);
+  delay(20);
+
+  digitalWrite(layer2, LOW);
+  digitalWrite(layer1, HIGH);
+  delay(20);
+
+  allOff();
+  allOn();
+  for (int i; i < 4; i++) {
+    for (int j; j < 4; j++) {
+      if (randCol == 0) {
+        red.digitalWrite(layerRed[i][j], LOW);
+      }
+      if (randCol == 1) {
+        green.digitalWrite(layerGreen[i][j], LOW);
+      }
+      if (randCol == 2) {
+        blue.digitalWrite(layerBlue[i][j], LOW);
+      }
+    }
+  }
+  delay(20);
+  allOff();
+}
+
+void function4() {
+  int z = 1;
+  int x = 0;
+  int y = 0;
+  int ledCount = 0;
+  int clickDelay = 250;
+  bool isComplete = true;
+  int levelCount = 0;
+  bool gameOver = false;
+  bool checker = false;
+
+  
+
+
+  int lvl1x = rand() % 4;
+  int lvl1y = rand() % 4;
+  int lvl1z = rand() % 4 + 1;
+
+
+
+
+  if (lvl1x == 0 && lvl1y == 0 && lvl1z == 1) {
+    lvl1x = rand() % 4;
+    lvl1y = rand() % 4;
+    lvl1z = rand() % 4 + 1;
+  }
+
+  int lvl2x = rand() % 4;
+  int lvl2y = rand() % 4;
+  int lvl2z = rand() % 4 + 1;
+
+  if (lvl2x == 0 && lvl2y == 0 && lvl2z == 1) {
+    lvl2x = rand() % 4;
+    lvl2y = rand() % 4;
+    lvl2z = rand() % 4 + 1;
+  }
+
+  int lvl3x = rand() % 4;
+  int lvl3y = rand() % 4;
+  int lvl3z = rand() % 4 + 1;
+
+  if (lvl3x == 0 && lvl3y == 0 && lvl3z == 1) {
+    lvl3x = rand() % 4;
+    lvl3y = rand() % 4;
+    lvl3z = rand() % 4 + 1;
+  }
+
+  int lvl4x = rand() % 4;
+  int lvl4y = rand() % 4;
+  int lvl4z = rand() % 4 + 1;
+
+  if (lvl4x == 0 && lvl4y == 0 && lvl4z == 1) {
+    lvl4x = rand() % 4;
+    lvl4y = rand() % 4;
+    lvl4z = rand() % 4 + 1;
+  }
+
+  int lvl5x = rand() % 4;
+  int lvl5y = rand() % 4;
+  int lvl5z = rand() % 4 + 1;
+
+  if (lvl5x == 0 && lvl5y == 0 && lvl5z == 1) {
+    lvl5x = rand() % 4;
+    lvl5y = rand() % 4;
+    lvl5z = rand() % 4 + 1;
+  }
+
+  int lvl6x = rand() % 4;
+  int lvl6y = rand() % 4;
+  int lvl6z = rand() % 4 + 1;
+
+  if (lvl6x == 0 && lvl6y == 0 && lvl6z == 1) {
+    lvl6x = rand() % 4;
+    lvl6y = rand() % 4;
+    lvl6z = rand() % 4 + 1;
+  }
+
+  int lvl7x = rand() % 4;
+  int lvl7y = rand() % 4;
+  int lvl7z = rand() % 4 + 1;
+
+  if (lvl7x == 0 && lvl7y == 0 && lvl7z == 1) {
+    lvl7x = rand() % 4;
+    lvl7y = rand() % 4;
+    lvl7z = rand() % 4 + 1;
+  }
+
+  int lvl8x = rand() % 4;
+  int lvl8y = rand() % 4;
+  int lvl8z = rand() % 4 + 1;
+
+  if (lvl8x == 0 && lvl8y == 0 && lvl8z == 1) {
+    lvl8x = rand() % 4;
+    lvl8y = rand() % 4;
+    lvl8z = rand() % 4 + 1;
+  }
+
+  int lvl9x = rand() % 4;
+  int lvl9y = rand() % 4;
+  int lvl9z = rand() % 4 + 1;
+
+  if (lvl9x == 0 && lvl9y == 0 && lvl9z == 1) {
+    lvl9x = rand() % 4;
+    lvl9y = rand() % 4;
+    lvl9z = rand() % 4 + 1;
+  }
+
+  int lvl10x = rand() % 4;
+  int lvl10y = rand() % 4;
+  int lvl10z = rand() % 4 + 1;
+
+  if (lvl10x == 0 && lvl10y == 0 && lvl10z == 1) {
+    lvl10x = rand() % 4;
+    lvl10y = rand() % 4;
+    lvl10z = rand() % 4 + 1;
+  }
+
+
+  allOff();
+
+
+  while (state == 4) {
+   Serial.print(levelCount +","+ lvl1x);
+
+    if (gameOver == true) {
+      finalShow();
+    }
+
+
+
+    if (digitalRead(lockIn) == LOW && gameOver == false) {
+      if (levelCount == 1 && x == lvl1x && y == lvl1y && z == lvl1z) {
+        isComplete = true;
+        x = 0;
+        y = 0;
+        z = 1;
+        checker = true;
+      }
+
+
+      if (levelCount == 2 && x == lvl1x && y == lvl1y && z == lvl1z && ledCount == 0) {
+        ledCount = 1;
+        checker = true;
+      }
+      if (levelCount == 2 && x == lvl2x && y == lvl2y && z == lvl2z && ledCount == 1) {
+        isComplete = true;
+        x = 0;
+        y = 0;
+        z = 1;
+        ledCount = 0;
+        checker = true;
+      }
+
+
+      if (levelCount == 3 && x == lvl1x && y == lvl1y && z == lvl1z && ledCount == 0) {
+        ledCount = 1;
+        checker = true;
+      }
+      if (levelCount == 3 && x == lvl2x && y == lvl2y && z == lvl2z && ledCount == 1) {
+        ledCount = 2;
+        checker = true;
+      }
+      if (levelCount == 3 && x == lvl3x && y == lvl3y && z == lvl3z && ledCount == 2) {
+        isComplete = true;
+        x = 0;
+        y = 0;
+        z = 1;
+        ledCount = 0;
+        checker = true;
+      }
+
+
+      if (levelCount == 4 && x == lvl1x && y == lvl1y && z == lvl1z && ledCount == 0) {
+        ledCount = 1;
+        checker = true;
+      }
+      if (levelCount == 4 && x == lvl2x && y == lvl2y && z == lvl2z && ledCount == 1) {
+        ledCount = 2;
+        checker = true;
+      }
+      if (levelCount == 4 && x == lvl3x && y == lvl3y && z == lvl3z && ledCount == 2) {
+        ledCount = 3;
+        checker = true;
+      }
+      if (levelCount == 4 && x == lvl4x && y == lvl4y && z == lvl4z && ledCount == 3) {
+        isComplete = true;
+        x = 0;
+        y = 0;
+        z = 1;
+        ledCount = 0;
+        checker = true;
+      }
+
+
+      if (levelCount == 5 && x == lvl1x && y == lvl1y && z == lvl1z && ledCount == 0) {
+        ledCount = 1;
+        checker = true;
+      }
+      if (levelCount == 5 && x == lvl2x && y == lvl2y && z == lvl2z && ledCount == 1) {
+        ledCount = 2;
+        checker = true;
+      }
+      if (levelCount == 5 && x == lvl3x && y == lvl3y && z == lvl3z && ledCount == 2) {
+        ledCount = 3;
+        checker = true;
+      }
+      if (levelCount == 5 && x == lvl4x && y == lvl4y && z == lvl4z && ledCount == 3) {
+        ledCount = 4;
+        checker = true;
+      }
+      if (levelCount == 5 && x == lvl5x && y == lvl5y && z == lvl5z && ledCount == 4) {
+        isComplete = true;
+        x = 0;
+        y = 0;
+        z = 1;
+        ledCount = 0;
+        checker = true;
+      }
+
+
+      if (levelCount == 6 && x == lvl1x && y == lvl1y && z == lvl1z && ledCount == 0) {
+        ledCount = 1;
+        checker = true;
+      }
+      if (levelCount == 6 && x == lvl2x && y == lvl2y && z == lvl2z && ledCount == 1) {
+        ledCount = 2;
+        checker = true;
+      }
+      if (levelCount == 6 && x == lvl3x && y == lvl3y && z == lvl3z && ledCount == 2) {
+        ledCount = 3;
+        checker = true;
+      }
+      if (levelCount == 6 && x == lvl4x && y == lvl4y && z == lvl4z && ledCount == 3) {
+        ledCount = 4;
+        checker = true;
+      }
+      if (levelCount == 6 && x == lvl5x && y == lvl5y && z == lvl5z && ledCount == 4) {
+        ledCount = 5;
+        checker = true;
+      }
+      if (levelCount == 6 && x == lvl6x && y == lvl6y && z == lvl6z && ledCount == 5) {
+        isComplete = true;
+        x = 0;
+        y = 0;
+        z = 1;
+        ledCount = 0;
+        checker = true;
+      }
+
+
+      if (levelCount == 7 && x == lvl1x && y == lvl1y && z == lvl1z && ledCount == 0) {
+        ledCount = 1;
+        checker = true;
+      }
+      if (levelCount == 7 && x == lvl2x && y == lvl2y && z == lvl2z && ledCount == 1) {
+        ledCount = 2;
+        checker = true;
+      }
+      if (levelCount == 7 && x == lvl3x && y == lvl3y && z == lvl3z && ledCount == 2) {
+        ledCount = 3;
+        checker = true;
+      }
+      if (levelCount == 7 && x == lvl4x && y == lvl4y && z == lvl4z && ledCount == 3) {
+        ledCount = 4;
+        checker = true;
+      }
+      if (levelCount == 7 && x == lvl5x && y == lvl5y && z == lvl5z && ledCount == 4) {
+        ledCount = 5;
+        checker = true;
+      }
+      if (levelCount == 7 && x == lvl6x && y == lvl6y && z == lvl6z && ledCount == 5) {
+        ledCount = 6;
+        checker = true;
+      }
+      if (levelCount == 7 && x == lvl7x && y == lvl7y && z == lvl7z && ledCount == 6) {
+        isComplete = true;
+        x = 0;
+        y = 0;
+        z = 1;
+        ledCount = 0;
+        checker = true;
+      }
+
+      if (levelCount == 8 && x == lvl1x && y == lvl1y && z == lvl1z && ledCount == 0) {
+        ledCount = 1;
+        checker = true;
+      }
+      if (levelCount == 8 && x == lvl2x && y == lvl2y && z == lvl2z && ledCount == 1) {
+        ledCount = 2;
+        checker = true;
+      }
+      if (levelCount == 8 && x == lvl3x && y == lvl3y && z == lvl3z && ledCount == 2) {
+        ledCount = 3;
+        checker = true;
+      }
+      if (levelCount == 8 && x == lvl4x && y == lvl4y && z == lvl4z && ledCount == 3) {
+        ledCount = 4;
+        checker = true;
+      }
+      if (levelCount == 8 && x == lvl5x && y == lvl5y && z == lvl5z && ledCount == 4) {
+        ledCount = 5;
+        checker = true;
+      }
+      if (levelCount == 8 && x == lvl6x && y == lvl6y && z == lvl6z && ledCount == 5) {
+        ledCount = 6;
+        checker = true;
+      }
+      if (levelCount == 8 && x == lvl7x && y == lvl7y && z == lvl7z && ledCount == 6) {
+        ledCount = 7;
+        checker = true;
+      }
+      if (levelCount == 8 && x == lvl8x && y == lvl8y && z == lvl8z && ledCount == 7) {
+        isComplete = true;
+        x = 0;
+        y = 0;
+        z = 1;
+        ledCount = 0;
+        checker = true;
+      }
+
+      if (levelCount == 9 && x == lvl1x && y == lvl1y && z == lvl1z && ledCount == 0) {
+        ledCount = 1;
+        checker = true;
+      }
+      if (levelCount == 9 && x == lvl2x && y == lvl2y && z == lvl2z && ledCount == 1) {
+        ledCount = 2;
+        checker = true;
+      }
+      if (levelCount == 9 && x == lvl3x && y == lvl3y && z == lvl3z && ledCount == 2) {
+        ledCount = 3;
+        checker = true;
+      }
+      if (levelCount == 9 && x == lvl4x && y == lvl4y && z == lvl4z && ledCount == 3) {
+        ledCount = 4;
+        checker = true;
+      }
+      if (levelCount == 9 && x == lvl5x && y == lvl5y && z == lvl5z && ledCount == 4) {
+        ledCount = 5;
+        checker = true;
+      }
+      if (levelCount == 9 && x == lvl6x && y == lvl6y && z == lvl6z && ledCount == 5) {
+        ledCount = 6;
+        checker = true;
+      }
+      if (levelCount == 9 && x == lvl7x && y == lvl7y && z == lvl7z && ledCount == 6) {
+        ledCount = 7;
+        checker = true;
+      }
+      if (levelCount == 9 && x == lvl8x && y == lvl8y && z == lvl8z && ledCount == 7) {
+        ledCount = 8;
+        checker = true;
+      }
+      if (levelCount == 9 && x == lvl9x && y == lvl9y && z == lvl9z && ledCount == 8) {
+        isComplete = true;
+        x = 0;
+        y = 0;
+        z = 1;
+        ledCount = 0;
+        checker = true;
+      }
+
+      if (levelCount == 10 && x == lvl1x && y == lvl1y && z == lvl1z && ledCount == 0) {
+        ledCount = 1;
+        checker = true;
+      }
+      if (levelCount == 10 && x == lvl2x && y == lvl2y && z == lvl2z && ledCount == 1) {
+        ledCount = 2;
+        checker = true;
+      }
+      if (levelCount == 10 && x == lvl3x && y == lvl3y && z == lvl3z && ledCount == 2) {
+        ledCount = 3;
+        checker = true;
+      }
+      if (levelCount == 10 && x == lvl4x && y == lvl4y && z == lvl4z && ledCount == 3) {
+        ledCount = 4;
+        checker = true;
+      }
+      if (levelCount == 10 && x == lvl5x && y == lvl5y && z == lvl5z && ledCount == 4) {
+        ledCount = 5;
+        checker = true;
+      }
+      if (levelCount == 10 && x == lvl6x && y == lvl6y && z == lvl6z && ledCount == 5) {
+        ledCount = 6;
+        checker = true;
+      }
+      if (levelCount == 10 && x == lvl7x && y == lvl7y && z == lvl7z && ledCount == 6) {
+        ledCount = 7;
+        checker = true;
+      }
+      if (levelCount == 10 && x == lvl8x && y == lvl8y && z == lvl8z && ledCount == 7) {
+        ledCount = 8;
+        checker = true;
+      }
+      if (levelCount == 10 && x == lvl9x && y == lvl9y && z == lvl9z && ledCount == 8) {
+        ledCount = 9;
+        checker = true;
+      }
+      if (levelCount == 10 && x == lvl10x && y == lvl10y && z == lvl10z && ledCount == 9) {
+        isComplete = true;
+        x = 0;
+        y = 0;
+        z = 1;
+        ledCount = 0;
+        checker = true;
+      }
+
+
+
+      if(checker == false) {
+        gameOver = true;
+      }
+      checker=false;
+
+      if(isComplete) {
+        delay(400);
+      }
+      if(!isComplete) {
+        blue.digitalWrite(layerBlue[y][x], LOW);
+        red.digitalWrite(layerRed[y][x], LOW);
+        delay(400);
+        allColumnsOff();
+      }
+    }
+
+    if (isComplete == true) {
+      levelCount++;
+      if (levelCount == 1) {
+        levels(lvl1x, lvl1y, lvl1z);
+      } else if (levelCount == 2) {
+        checker=false;
+        levels(lvl1x, lvl1y, lvl1z);
+        levels(lvl2x, lvl2y, lvl2z);
+      } else if (levelCount == 3) {
+        checker=false;
+        levels(lvl1x, lvl1y, lvl1z);
+        levels(lvl2x, lvl2y, lvl2z);
+        levels(lvl3x, lvl3y, lvl3z);
+      } else if (levelCount == 4) {
+        checker=false;
+        levels(lvl1x, lvl1y, lvl1z);
+        levels(lvl2x, lvl2y, lvl2z);
+        levels(lvl3x, lvl3y, lvl3z);
+        levels(lvl4x, lvl4y, lvl4z);
+      } else if (levelCount == 5) {
+        checker=false;
+        levels(lvl1x, lvl1y, lvl1z);
+        levels(lvl2x, lvl2y, lvl2z);
+        levels(lvl3x, lvl3y, lvl3z);
+        levels(lvl4x, lvl4y, lvl4z);
+        levels(lvl5x, lvl5y, lvl5z);
+      } else if (levelCount == 6) {
+        checker=false;
+        levels(lvl1x, lvl1y, lvl1z);
+        levels(lvl2x, lvl2y, lvl2z);
+        levels(lvl3x, lvl3y, lvl3z);
+        levels(lvl4x, lvl4y, lvl4z);
+        levels(lvl5x, lvl5y, lvl5z);
+        levels(lvl6x, lvl6y, lvl6z);
+      } else if (levelCount == 7) {
+        checker=false;
+        levels(lvl1x, lvl1y, lvl1z);
+        levels(lvl2x, lvl2y, lvl2z);
+        levels(lvl3x, lvl3y, lvl3z);
+        levels(lvl4x, lvl4y, lvl4z);
+        levels(lvl5x, lvl5y, lvl5z);
+        levels(lvl6x, lvl6y, lvl6z);
+        levels(lvl7x, lvl7y, lvl7z);
+      } else if (levelCount == 8) {
+        checker=false;
+        levels(lvl1x, lvl1y, lvl1z);
+        levels(lvl2x, lvl2y, lvl2z);
+        levels(lvl3x, lvl3y, lvl3z);
+        levels(lvl4x, lvl4y, lvl4z);
+        levels(lvl5x, lvl5y, lvl5z);
+        levels(lvl6x, lvl6y, lvl6z);
+        levels(lvl7x, lvl7y, lvl7z);
+        levels(lvl8x, lvl8y, lvl8z);
+      } else if (levelCount == 9) {
+        checker=false;
+        levels(lvl1x, lvl1y, lvl1z);
+        levels(lvl2x, lvl2y, lvl2z);
+        levels(lvl3x, lvl3y, lvl3z);
+        levels(lvl4x, lvl4y, lvl4z);
+        levels(lvl5x, lvl5y, lvl5z);
+        levels(lvl6x, lvl6y, lvl6z);
+        levels(lvl7x, lvl7y, lvl7z);
+        levels(lvl8x, lvl8y, lvl8z);
+        levels(lvl9x, lvl9y, lvl9z);
+      } else if (levelCount == 10) {
+        checker=false;
+        levels(lvl1x, lvl1y, lvl1z);
+        levels(lvl2x, lvl2y, lvl2z);
+        levels(lvl3x, lvl3y, lvl3z);
+        levels(lvl4x, lvl4y, lvl4z);
+        levels(lvl5x, lvl5y, lvl5z);
+        levels(lvl6x, lvl6y, lvl6z);
+        levels(lvl7x, lvl7y, lvl7z);
+        levels(lvl8x, lvl8y, lvl8z);
+        levels(lvl9x, lvl9y, lvl9z);
+        levels(lvl10x, lvl10y, lvl10z);
+      }
+      isComplete = false;
+    }
+
+
+
+
+    if (digitalRead(right) == LOW && x < 3) {
+      x += 1;
+      Serial.print("x++");
+      delay(clickDelay);
+      allOff();
+    }
+    if (digitalRead(left) == LOW && x > 0) {
+      x -= 1;
+      Serial.print("x--");
+      delay(clickDelay);
+      allOff();
+    }
+    if (digitalRead(forward) == LOW && y > 0) {
+      y -= 1;
+      Serial.print("y--");
+      delay(clickDelay);
+      allOff();
+    }
+    if (digitalRead(backward) == LOW && y < 3) {
+      y += 1;
+      Serial.print("y++");
+      delay(clickDelay);
+      allOff();
+    }
+    if (digitalRead(up) == LOW && z < 4) {
+      z += 1;
+      Serial.print("z++");
+      delay(clickDelay);
+      allOff();
+    }
+    if (digitalRead(down) == LOW && z > 1) {
+      z -= 1;
+      Serial.print("z--");
+      delay(clickDelay);
+      allOff();
+    }
+    if (z < 1) {
+      z = 1;
+    }
+    if (z > 4) {
+      z = 4;
+    }
+    if (x < 0) {
+      x = 0;
+    }
+    if (x > 3) {
+      x = 4;
+    }
+    if (y < 0) {
+      y = 0;
+    }
+    if (x > 3) {
+      x = 3;
+    }
+
+
+
+
+    green.digitalWrite(layerGreen[y][x], LOW);
+    if (z == 1) {
+      digitalWrite(layer1, HIGH);
+      digitalWrite(layer2, LOW);
+      digitalWrite(layer3, LOW);
+      digitalWrite(layer4, LOW);
+    }
+    if (z == 2) {
+      digitalWrite(layer1, LOW);
+      digitalWrite(layer2, HIGH);
+      digitalWrite(layer3, LOW);
+      digitalWrite(layer4, LOW);
+    }
+    if (z == 3) {
+      digitalWrite(layer1, LOW);
+      digitalWrite(layer2, LOW);
+      digitalWrite(layer3, HIGH);
+      digitalWrite(layer4, LOW);
+    }
+    if (z == 4) {
+      digitalWrite(layer1, LOW);
+      digitalWrite(layer2, LOW);
+      digitalWrite(layer3, LOW);
+      digitalWrite(layer4, HIGH);
+    }
+  }
+}
+
+class Level {       
+  public:             
+    int x;        
+    int y;
+    int z;
+    bool complete;  
+};
+
+
+void finalShow() {
+  allOff();
+  lightAllLampsRed();
+  delay(2000);
+  for (int i = 0; i < 8; i++) {
+    allOff();
+    lightAllLampsRed();
+    delay(10);
+    allOff();
+    lightAllLampsBlue();
+    delay(10);
+    allOff();
+    lightAllLampsGreen();
+    delay(10);
+  }
+  state = 0;
+}
+
+void levels(int x, int y, int z) {
+  allOff();
+  blue.digitalWrite(layerBlue[y][x], LOW);
+  if (z == 1) {
+    digitalWrite(layer1, HIGH);
+    digitalWrite(layer2, LOW);
+    digitalWrite(layer3, LOW);
+    digitalWrite(layer4, LOW);
+  }
+  if (z == 2) {
+    digitalWrite(layer1, LOW);
+    digitalWrite(layer2, HIGH);
+    digitalWrite(layer3, LOW);
+    digitalWrite(layer4, LOW);
+  }
+  if (z == 3) {
+    digitalWrite(layer1, LOW);
+    digitalWrite(layer2, LOW);
+    digitalWrite(layer3, HIGH);
+    digitalWrite(layer4, LOW);
+  }
+  if (z == 4) {
+    digitalWrite(layer1, LOW);
+    digitalWrite(layer2, LOW);
+    digitalWrite(layer3, LOW);
+    digitalWrite(layer4, HIGH);
+  }
+  delay(1000);
+  allOff();
+}
+
+
+void allOn() {
+  digitalWrite(layer1, HIGH);
+  digitalWrite(layer2, HIGH);
+  digitalWrite(layer3, HIGH);
+  digitalWrite(layer4, HIGH);
+}
+
+void testOrderBlue() {
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      blue.digitalWrite(layerBlue[i][j], LOW);
+      delay(400);
+    }
+  }
+}
+void testOrderRed() {
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      red.digitalWrite(layerRed[i][j], LOW);
+      delay(400);
+    }
+  }
+}
+void testOrderGreen() {
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      green.digitalWrite(layerGreen[i][j], LOW);
+      delay(400);
+    }
+  }
+}
+
+void allOff() {
+  for (int i = 0; i < 16; i++) {
+    red.digitalWrite(i, HIGH);
+  }
+  for (int i = 0; i < 16; i++) {
+    green.digitalWrite(i, HIGH);
+  }
+  for (int i = 0; i < 16; i++) {
+    blue.digitalWrite(i, HIGH);
+  }
+  digitalWrite(layer1, LOW);
+  digitalWrite(layer2, LOW);
+  digitalWrite(layer3, LOW);
+  digitalWrite(layer4, LOW);
+}
+
+
+
+
+void allColumnsOff() {
+  for (int i = 0; i < 16; i++) {
+    red.digitalWrite(i, HIGH);
+  }
+  for (int i = 0; i < 16; i++) {
+    green.digitalWrite(i, HIGH);
+  }
+  for (int i = 0; i < 16; i++) {
+    blue.digitalWrite(i, HIGH);
+  }
+}
+
+
+void lightAllLampsRed() {
+  allOn();
+  for (int i = 0; i < 16; i++) {
+    red.digitalWrite(i, LOW);
+  }
+}
+void lightAllLampsBlue() {
+  allOn();
+  for (int i = 0; i < 16; i++) {
+    blue.digitalWrite(i, LOW);
+  }
+}
+void lightAllLampsGreen() {
+  allOn();
+  for (int i = 0; i < 16; i++) {
+    green.digitalWrite(i, LOW);
+  }
+}
+
+
+
